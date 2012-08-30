@@ -84,6 +84,27 @@ class haproxy (
       notify  => Service['haproxy'],
     }
 
+ # Run HAproxy init script
+  exec { "haproxy-init" :
+        command     => "sed -i s/0/1/ /etc/default/haproxy",
+        path        => '/usr/bin:/usr/sbin:/bin:/sbin',
+	require     => Package ['haproxy'],
+    }
+
+ # Modify Sysctl to support non-local IP's
+ # exec { "sysctl" :
+ #       command     => "net.ipv4.ip_nonlocal_bind=1",
+ #       path        => '/usr/bin:/usr/sbin:/bin:/sbin',
+ #       require     => Package ['haproxy'],
+ #   }
+
+ #Restart Sysctl
+#  exec { "sysctl-restart" :
+#        command     => "sysctl -p",
+#        path        => '/usr/bin:/usr/sbin:/bin:/sbin',
+#        require     => Exec ['sysctl'],
+#    }
+
     # Simple Header
     concat::fragment { '00-header':
       target  => '/etc/haproxy/haproxy.cfg',
